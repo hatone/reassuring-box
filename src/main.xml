@@ -5,8 +5,8 @@
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	<style id="defaultStyle" font="32px bold" color="white" />
 	<label id="mainLabel" width="300" height="24" string="'Hello world'" style="defaultStyle"/>
-	
-	
+
+
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <!-- ASSETS -->
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -18,22 +18,43 @@
     </skin>
     <style id="buttonStyle" font="bold 24px" color="black"/>
     <style id="statusFaceStyle" font="120px" color="#FF000000"/>
-    <style id="statusMessageStyle" font="bold 30px" color="#FF000000"/>   
+    <style id="statusMessageStyle" font="bold 30px" color="#FF000000"/>
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <!-- VIEWS -->
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 	<container id="BlueScreen" left="0" top="0" right="0" bottom="0" skin="blueSkin">
 	       <label string="': )'" top="0" style="statusFaceStyle"></label>
-	       <label string="'Everything is fine.'" bottom="70" style="statusMessageStyle"></label>
-	       
-	
+	       <label string="'Everything is fine.'" bottom="80" style="statusMessageStyle"></label>
+
+		   <container width="100" height="44" bottom="10" right="10" skin="buttonSkin" active="true">
+	       <behavior>
+               <method id="onTouchBegan" params="container">
+                   <![CDATA[
+                   ]]>
+               </method>
+               <method id="onTouchEnded" params="container">
+                   <![CDATA[
+                   		changeState(1);
+                   ]]>
+               </method>
+               <method id="onTap" params="container">
+                   <![CDATA[
+
+                   ]]>
+               </method>
+           </behavior>
+           <label string="'to red'" style="buttonStyle">
+
+           </label>
+
+	   </container>
 	</container>
-	
+
 	<container id="RedScreen" left="0" top="0" right="0" bottom="0" skin="redSkin">
 		<label string="': ('" top="10" style="statusFaceStyle"></label>
 		<label string="'stove is OK?'" bottom="80" style="statusMessageStyle"></label>
-		
+
 	   	<container width="100" height="44" bottom="20" skin="buttonSkin" active="true">
 	       <behavior>
                <method id="onTouchBegan" params="container">
@@ -51,15 +72,15 @@
                </method>
            </behavior>
            <label string="'I\'m fine.'" style="buttonStyle">
-               
+
            </label>
 	   </container>
 	</container>
-	
+
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <!-- BEHAVIORS -->
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-    
+
     <behavior id="ApplicationBehavior">
     	<method id="onLaunch" params="content">
             <![CDATA[
@@ -67,14 +88,14 @@
 
             ]]>
         </method>
-        
+
         <method id="onComplete" params="application, message, data">
             <![CDATA[
-                     	
+
             ]]>
         </method>
     </behavior>
-	
+
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <!-- SCRIPTS -->
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -87,7 +108,7 @@
                 var view = new (state ? RedScreen : BlueScreen)();
                 application.add(view);
             }
-            
+
             changeState(1);
         ]]>
     </script>
