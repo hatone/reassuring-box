@@ -19,12 +19,13 @@
     <style id="buttonStyle" font="bold 24px" color="black"/>
     <style id="statusFaceStyle" font="120px" color="#FF000000"/>
     <style id="statusMessageStyle" font="bold 30px" color="#FF000000"/>
+    
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <!-- VIEWS -->
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 	<container id="BlueScreen" left="0" top="0" right="0" bottom="0" skin="blueSkin">
-	       <label string="': )'" top="0" style="statusFaceStyle"></label>
+	       <label string="': )'" top="10" style="statusFaceStyle"></label>
 	       <label string="'Everything is fine.'" bottom="80" style="statusMessageStyle"></label>
 
 		   <container width="100" height="44" bottom="10" right="10" skin="buttonSkin" active="true">
@@ -76,6 +77,27 @@
            </label>
 	   </container>
 	</container>
+	
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+<!-- HANDLERS -->
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+    <handler path="/sensorCallback">
+        <behavior>
+            <method id="onInvoke" params="handler, message">
+                <![CDATA[
+                changeState(0);
+                var response = JSON.parse(message.requestText);                    
+                    if (response.change) {
+                        //trace(message.requestText + "\n");        
+                        //changeState(response.state);
+                        changeState(1);
+                    }
+                ]]>
+
+            </method>
+        </behavior>
+    </handler>
 
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <!-- BEHAVIORS -->
@@ -84,14 +106,23 @@
     <behavior id="ApplicationBehavior">
     	<method id="onLaunch" params="content">
             <![CDATA[
-
-
+			var path = mergeURI( application.url, "Sensor.js" ).substring("file://".length);
+			var query = {
+				scriptPath: path,
+				callback: "xkpr://" + application.id + "/sensorCallback",
+				sendParamsOnce: true,
+				mseconds: Math.floor(1000/60),
+				skipFirst: false,
+              	};
+              	
+           	var msg = new Message("xkpr://shell/hardwarepins/repeat?" + serializeQuery(query));
+            application.invoke(msg, Message.JSON);
             ]]>
         </method>
 
         <method id="onComplete" params="application, message, data">
             <![CDATA[
-
+				repeatID = JSON.parse( message.responseText ).id;  
             ]]>
         </method>
     </behavior>
@@ -101,6 +132,8 @@
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <script>
         <![CDATA[
+         	var repeatID = 0;
+            application.behavior = new ApplicationBehavior();
             function changeState(state) {
                 if (application.last) {
                     application.remove(application.last);
@@ -109,7 +142,7 @@
                 application.add(view);
             }
 
-            changeState(1);
+            changeState(0);
         ]]>
     </script>
 </program>
