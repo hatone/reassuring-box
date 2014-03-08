@@ -4,8 +4,6 @@
 <!-- my tutorials -->
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	<style id="defaultStyle" font="32px bold" color="white" />
-	<label id="mainLabel" width="300" height="24" string="'Hello world'" style="defaultStyle"/>
-
 
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <!-- ASSETS -->
@@ -18,43 +16,45 @@
     </skin>
     <style id="buttonStyle" font="bold 24px" color="black"/>
     <style id="statusFaceStyle" font="120px" color="#FF000000"/>
-    <style id="statusMessageStyle" font="bold 30px" color="#FF000000"/>
+    <style id="statusMessageStyle" font="bold 20px" color="#FF000000"/>
+    
+    <label id="statusMessage" bottom="80" style="statusMessageStyle"/>
     
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <!-- VIEWS -->
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
-	<container id="BlueScreen" left="0" top="0" right="0" bottom="0" skin="blueSkin">
+	<container id="GreenScreen" left="0" top="0" right="0" bottom="0" skin="blueSkin">
 	       <label string="': )'" top="10" style="statusFaceStyle"></label>
 	       <label string="'Everything is fine.'" bottom="80" style="statusMessageStyle"></label>
-
-		   <container width="100" height="44" bottom="10" right="10" skin="buttonSkin" active="true">
+	</container>
+	
+	<container id="GreenScreenWithReturn" left="0" top="0" right="0" bottom="0" skin="blueSkin">
+	    <label string="': )'" top="10" style="statusFaceStyle"></label>
+		<label string="'Take care!'" bottom="80" style="statusMessageStyle"></label>
+		<label string="'(Something is working)'" bottom="50" style="statusMessageStyle"></label>
+	   	<container width="20" height="20" top="10" right="10" skin="buttonSkin" active="true">
 	       <behavior>
                <method id="onTouchBegan" params="container">
                    <![CDATA[
+                   fineFlag = 0;
                    ]]>
                </method>
                <method id="onTouchEnded" params="container">
                    <![CDATA[
-                   		changeState(1);
                    ]]>
                </method>
                <method id="onTap" params="container">
                    <![CDATA[
-
                    ]]>
                </method>
            </behavior>
-           <label string="'to red'" style="buttonStyle">
-
-           </label>
-
+           <label string="'x'" style="buttonStyle"></label>
 	   </container>
 	</container>
 
 	<container id="RedScreen" left="0" top="0" right="0" bottom="0" skin="redSkin">
 		<label string="': ('" top="10" style="statusFaceStyle"></label>
-		<label string="'stove is OK?'" bottom="80" style="statusMessageStyle"></label>
 
 	   	<container width="100" height="44" bottom="20" skin="buttonSkin" active="true">
 	       <behavior>
@@ -64,7 +64,8 @@
                </method>
                <method id="onTouchEnded" params="container">
                    <![CDATA[
-                        changeState(0);
+                   		fineFlag = 1;
+                        keepGreen();
                    ]]>
                </method>
                <method id="onTap" params="container">
@@ -72,9 +73,7 @@
                    ]]>
                </method>
            </behavior>
-           <label string="'I\'m fine.'" style="buttonStyle">
-
-           </label>
+           <label string="'I\'m fine.'" style="buttonStyle"></label>
 	   </container>
 	</container>
 	
@@ -89,9 +88,12 @@
                 changeState(0);
                 var response = JSON.parse(message.requestText);                    
                     if (response.change) {
-                        //trace(message.requestText + "\n");        
-                        //changeState(response.state);
-                        changeState(1);
+                        trace(message.requestText + "\n");        
+ 						if(fineFlag == 0) {
+                        	changeState(1,response.message);
+                        } else if (fineFlag == 1) {
+                        	keepGreen();
+                        }
                     }
                 ]]>
 
@@ -134,15 +136,44 @@
         <![CDATA[
          	var repeatID = 0;
             application.behavior = new ApplicationBehavior();
-            function changeState(state) {
+            changeState(0);
+            
+            var fineFlag = 0;
+                        
+            function changeState(state, message) {
                 if (application.last) {
                     application.remove(application.last);
                 }
-                var view = new (state ? RedScreen : BlueScreen)();
-                application.add(view);
+                
+                if (state == 1) {
+                	application.add(new RedScreen);
+                	
+                	var errorStatusMessage = new statusMessage;
+                	errorStatusMessage.string = "";
+                	
+                	for(var i=0; i< message.length; i++) {
+                		errorStatusMessage.string += message[i] + " ";
+                	}
+                	
+                	if(message.length == 1) {
+                		errorStatusMessage.string += "is OK?"	
+                	} else {
+                		errorStatusMessage.string += "are OK?"
+                	} 
+                	
+                	application.add(errorStatusMessage);
+                	
+                } else {
+                	application.add(new GreenScreen);
+                }
+                
+            }	
+            
+            function keepGreen() {
+                    application.remove(application.last);
+                	application.add(new GreenScreenWithReturn);
             }
 
-            changeState(0);
         ]]>
     </script>
 </program>
