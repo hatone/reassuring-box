@@ -3,8 +3,8 @@ if (!("Init" in this)) {
 	
 	CURRENCY1 = 51;
 	CURRENCY2 = 53;
-	ALCOHOL = 59;
-	GAS = 61;
+	GAS = 59;
+	ALCOHOL = 61;
 
     LOW = 0;
     HIGH = 1;

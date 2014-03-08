@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <program xmlns="http://www.kinoma.com/kpr/1">
+	<require id="CONTROL" path="mobile/control" />
+	
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 <!-- my tutorials -->
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -12,7 +14,7 @@
 	<skin id="redSkin" color="#FFFF4500"/>
     <skin id="blueSkin" color="#FFADFF2F"/>
     <skin id="buttonSkin">
-        <states names="DISABLED,ENABLED,SELECTED" colors="#FFFAEBD7,white,#c44"/>
+        <states colors="blue,white,red"/>
     </skin>
     <style id="buttonStyle" font="bold 24px" color="black"/>
     <style id="statusFaceStyle" font="120px" color="#FF000000"/>
@@ -25,30 +27,30 @@
 <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 	<container id="GreenScreen" left="0" top="0" right="0" bottom="0" skin="blueSkin">
-	       <label string="': )'" top="10" style="statusFaceStyle"></label>
-	       <label string="'Everything is fine.'" bottom="80" style="statusMessageStyle"></label>
+		<label string="': )'" top="10" style="statusFaceStyle"></label>
+	    <label string="'Everything is fine.'" bottom="80" style="statusMessageStyle"></label>
+	    <behavior>
+            <method id="onDisplayed">
+                <![CDATA[
+                    fineFlag = 0;
+                ]]>
+            </method>
+        </behavior>
 	</container>
 	
 	<container id="GreenScreenWithReturn" left="0" top="0" right="0" bottom="0" skin="blueSkin">
 	    <label string="': )'" top="10" style="statusFaceStyle"></label>
 		<label string="'Take care!'" bottom="80" style="statusMessageStyle"></label>
 		<label string="'(Something is working)'" bottom="50" style="statusMessageStyle"></label>
-	   	<container width="20" height="20" top="10" right="10" skin="buttonSkin" active="true">
-	       <behavior>
-               <method id="onTouchBegan" params="container">
+	   	<container width="44" height="44" top="10" right="10" skin="buttonSkin" active="true">
+	   		<behavior like="CONTROL.ButtonBehavior">
+	   		   <method id="onTap" params="container">
                    <![CDATA[
-                   fineFlag = 0;
-                   ]]>
-               </method>
-               <method id="onTouchEnded" params="container">
-                   <![CDATA[
-                   ]]>
-               </method>
-               <method id="onTap" params="container">
-                   <![CDATA[
+   					fineFlag = 0;
                    ]]>
                </method>
            </behavior>
+	        
            <label string="'x'" style="buttonStyle"></label>
 	   </container>
 	</container>
@@ -56,20 +58,12 @@
 	<container id="RedScreen" left="0" top="0" right="0" bottom="0" skin="redSkin">
 		<label string="': ('" top="10" style="statusFaceStyle"></label>
 
-	   	<container width="100" height="44" bottom="20" skin="buttonSkin" active="true">
-	       <behavior>
-               <method id="onTouchBegan" params="container">
-                   <![CDATA[
-                   ]]>
-               </method>
-               <method id="onTouchEnded" params="container">
-                   <![CDATA[
-                   		fineFlag = 1;
-                        keepGreen();
-                   ]]>
-               </method>
+	   	<container width="100" height="44" bottom="20" skin="buttonSkin" active="true" state="1">
+	       <behavior like="CONTROL.ButtonBehavior">
                <method id="onTap" params="container">
                    <![CDATA[
+                     	fineFlag = 1;
+                        keepGreen();
                    ]]>
                </method>
            </behavior>
@@ -88,7 +82,7 @@
                 changeState(0);
                 var response = JSON.parse(message.requestText);                    
                     if (response.change) {
-                        trace(message.requestText + "\n");        
+                        //trace(message.requestText + "\n");        
  						if(fineFlag == 0) {
                         	changeState(1,response.message);
                         } else if (fineFlag == 1) {
